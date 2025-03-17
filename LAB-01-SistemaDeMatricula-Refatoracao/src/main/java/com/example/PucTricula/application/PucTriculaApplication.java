@@ -102,7 +102,6 @@ class PucTriculaApplication {
                 invoker.adicionarComando(10, new VisualizarDisciplinaProfessorCommand(professor, usuarios, disciplinas, scanner));
             }
 
-
             invoker.executarComando(opcao);
             
             switch(opcao){
