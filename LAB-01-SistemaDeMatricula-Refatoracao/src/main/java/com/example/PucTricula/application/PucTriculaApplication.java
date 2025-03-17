@@ -9,6 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import main.java.com.example.PucTricula.command.AtribuirProfessorCommand;
+import main.java.com.example.PucTricula.command.CadastrarAlunoCommand;
+import main.java.com.example.PucTricula.command.CadastrarDisciplinaCommand;
+import main.java.com.example.PucTricula.command.CadastrarProfessorCommand;
+import main.java.com.example.PucTricula.command.CalcularMensalidadesCommand;
+import main.java.com.example.PucTricula.command.CancelarMatriculaCommand;
+import main.java.com.example.PucTricula.command.CommandInvoker;
+import main.java.com.example.PucTricula.command.GerarCurriculoSemestralCommand;
+import main.java.com.example.PucTricula.command.ListarUsuariosCommand;
+import main.java.com.example.PucTricula.command.MatricularAlunoCommand;
+import main.java.com.example.PucTricula.command.VisualizarDisciplinaProfessorCommand;
 import main.java.com.example.PucTricula.model.Administrador;
 import main.java.com.example.PucTricula.model.Aluno;
 import main.java.com.example.PucTricula.model.Disciplina;
@@ -65,7 +76,53 @@ class PucTriculaApplication {
             int opcao = scanner.nextInt();
             scanner.nextLine();
 
-            switch (opcao) {
+            CommandInvoker invoker = new CommandInvoker();
+
+            if (usuarioLogado instanceof Administrador) {
+                Administrador admin = (Administrador) usuarioLogado;
+                invoker.adicionarComando(1, new CadastrarAlunoCommand(admin, usuarios, scanner));
+                invoker.adicionarComando(2, new CadastrarProfessorCommand(admin, usuarios, scanner));
+                invoker.adicionarComando(3, new ListarUsuariosCommand(admin, usuarios, scanner));
+                invoker.adicionarComando(4, new CadastrarDisciplinaCommand(admin, disciplinas, scanner));
+                invoker.adicionarComando(5, new MatricularAlunoCommand(admin, usuarios, disciplinas, scanner));
+                invoker.adicionarComando(6, new AtribuirProfessorCommand(admin, usuarios, disciplinas, scanner));
+                invoker.adicionarComando(7, new GerarCurriculoSemestralCommand(admin, usuarios, disciplinas, scanner));
+                invoker.adicionarComando(8, new CalcularMensalidadesCommand(admin, usuarios, disciplinas, scanner));
+                invoker.adicionarComando(9, new CancelarMatriculaCommand(admin, usuarios, disciplinas, scanner));
+                invoker.adicionarComando(10, new VisualizarDisciplinaProfessorCommand(admin, usuarios, disciplinas, scanner));
+        
+            }else if(usuarioLogado instanceof Aluno){
+                Aluno aluno = (Aluno) usuarioLogado;
+                invoker.adicionarComando(5, new MatricularAlunoCommand(aluno, usuarios, disciplinas, scanner));
+                invoker.adicionarComando(7, new GerarCurriculoSemestralCommand(aluno, usuarios, disciplinas, scanner));
+                invoker.adicionarComando(9, new CancelarMatriculaCommand(aluno, usuarios, disciplinas, scanner));
+            } else if(usuarioLogado instanceof Professor){
+                Professor professor = (Professor) usuarioLogado;
+                invoker.adicionarComando(7, new GerarCurriculoSemestralCommand(professor, usuarios, disciplinas, scanner));
+                invoker.adicionarComando(10, new VisualizarDisciplinaProfessorCommand(professor, usuarios, disciplinas, scanner));
+            }
+
+
+            invoker.executarComando(opcao);
+            
+            switch(opcao){
+                case 11:
+                    System.out.println(">> Encerrando sistema...\n >> Obrigado!");
+                    scanner.close();
+                    return;
+                    case 12: 
+                    System.out.println(" >> Fazendo logout...");
+                    usuarioLogado = null;
+                    System.out.println("\n\n\n--- Seja bem vindo ao PUCTricula! ---\n >> Realize o seu login.");
+                    do {
+                        usuarioLogado = realizarLogin(usuarios, scanner);
+                    } while (usuarioLogado == null);
+                    break;
+                default:
+                    System.out.println(">> Opção inválida, tente novamente.");
+            }
+
+            /*switch (opcao) {
                 case 1:
                 ((Administrador) usuarioLogado).cadastrarAluno(usuarios, scanner);
                 break;
@@ -128,7 +185,7 @@ class PucTriculaApplication {
                     break;
                 default:
                     System.out.println(">> Opção inválida, tente novamente.");
-            }
+            }*/
         }
     }
 
@@ -207,7 +264,7 @@ private static List<Usuario> carregarUsuarios() {
         }
     }
 
-    public static void calcularMensalidades(List<Usuario> usuarios, List<Disciplina> disciplinas) {
+    /*public static void calcularMensalidades(List<Usuario> usuarios, List<Disciplina> disciplinas) {
         System.out.println("\n--- Sistema de Cobrança ---");
         for (Usuario u : usuarios) {
             if (u instanceof Aluno) {
@@ -282,7 +339,7 @@ private static List<Usuario> carregarUsuarios() {
                 System.out.println(">> Este professor não ministra nenhuma disciplina.\n");
             }
         }
-    }
+    }*/
      private static Usuario realizarLogin(List<Usuario> usuarios, Scanner scanner) {
         System.out.print(">> Email: ");
         String email = scanner.nextLine();

@@ -94,7 +94,7 @@ public class Administrador extends Usuario {
         }
     }
 
-    public void atribuirAluno(List<Usuario> usuarios, List<Disciplina> disciplinas, Scanner scanner){
+    /*public void atribuirAluno(List<Usuario> usuarios, List<Disciplina> disciplinas, Scanner scanner){
         System.out.println(">> Selecione um aluno para matrícula:");
                 List<Aluno> alunos = new ArrayList<>();
                 for (Usuario u : usuarios) {
@@ -122,7 +122,7 @@ public class Administrador extends Usuario {
                         salvarMatricula(alunoSelecionado.getNome(), disciplinas.get(disciplinaIndex).getNome());
                     }
                 }
-    }
+    }*/
 
     public void atribuirProfessor(List<Usuario> usuarios, List<Disciplina> disciplinas, Scanner scanner){
         System.out.println(">> Selecione um professor para atribuir a uma disciplina:");
@@ -168,9 +168,111 @@ public class Administrador extends Usuario {
         throw new UnsupportedOperationException("Unimplemented method 'atualizarInformacoes'");
     }
 
-    public void gerarCurriculoSemestral() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'gerarCurriculoSemestral'");
+    public void gerarCurriculoSemestral(List<Usuario> usuarios, List<Disciplina> disciplinas, Scanner scanner) {
+        System.out.println("\n>> Disciplinas cadastradas, seus professores e alunos:");
+                    for (Disciplina d : disciplinas) {
+                        System.out.println("- " + d.getNome() + " (Créditos: " + d.getCreditos() + ")");
+                        System.out.println("  Professor: " + (d.getProfessor() != null ? d.getProfessor().getNome()
+                                : "Nenhum professor atribuído"));
+                        List<Aluno> alunosMatriculados = d.getAlunosMatriculados();
+                        if (alunosMatriculados.isEmpty()) {
+                            System.out.println("  >> Nenhum aluno matriculado.");
+                        } else {
+                            System.out.println("  >> Alunos matriculados:");
+                            for (Aluno alunoMatriculado : alunosMatriculados) {
+                                System.out.println("    - " + alunoMatriculado.getNome());
+                            }
+                        }
+                    }
     }
 
+    public static void calcularMensalidades(List<Usuario> usuarios, List<Disciplina> disciplinas, Scanner scanner) {
+        System.out.println("\n--- Sistema de Cobrança ---");
+        for (Usuario u : usuarios) {
+            if (u instanceof Aluno) {
+                Aluno aluno = (Aluno) u;
+                double totalMensalidade = 0;
+                for (Disciplina d : disciplinas) {
+                    if (d.getAlunosMatriculados().contains(aluno)) {
+                        totalMensalidade += d.getCusto();
+                    }
+                }
+                System.out.println("Aluno: " + aluno.getNome() + " - Mensalidade: R$ " + totalMensalidade);
+            }
+        }
+    }
+
+    public static void cancelarMatricula(List<Usuario> usuarios, List<Disciplina> disciplinas, Scanner scanner) {
+        System.out.println("\n--- Cancelamento de Matrícula ---");
+        System.out.println(">> Selecione um aluno:");
+        List<Aluno> alunos = new ArrayList<>();
+        for (Usuario u : usuarios) {
+            if (u instanceof Aluno) {
+                alunos.add((Aluno) u);
+            }
+        }
+        for (int i = 0; i < alunos.size(); i++) {
+            System.out.println(i + ". " + alunos.get(i).getNome());
+        }
+        int alunoIndex = scanner.nextInt();
+        scanner.nextLine();
+        
+        if (alunoIndex >= 0 && alunoIndex < alunos.size()) {
+            Aluno alunoSelecionado = alunos.get(alunoIndex);
+            System.out.println(">> Selecione uma disciplina:");
+            for (int i = 0; i < disciplinas.size(); i++) {
+                System.out.println(i + ". " + disciplinas.get(i).getNome());
+            }
+            int disciplinaIndex = scanner.nextInt();
+            scanner.nextLine();
+            
+            if (disciplinaIndex >= 0 && disciplinaIndex < disciplinas.size()) {
+                disciplinas.get(disciplinaIndex).cancelarMatricula(alunoSelecionado);
+            }
+        }
+    }
+
+    public static void visualizarDisciplinasProfessor(List<Usuario> usuarios, List<Disciplina> disciplinas, Scanner scanner) {
+        System.out.println("\n--- Grade do Professor ---");
+        System.out.println(">> Selecione um professor:");
+        List<Professor> professores = new ArrayList<>();
+        for (Usuario u : usuarios) {
+            if (u instanceof Professor) {
+                professores.add((Professor) u);
+            }
+        }
+        for (int i = 0; i < professores.size(); i++) {
+            System.out.println(i + ". " + professores.get(i).getNome());
+        }
+        int professorIndex = scanner.nextInt();
+        scanner.nextLine();
+        
+        if (professorIndex >= 0 && professorIndex < professores.size()) {
+            Professor professorSelecionado = professores.get(professorIndex);
+            System.out.println(">> Disciplinas ministradas por " + professorSelecionado.getNome() + ":\n");
+            boolean encontrouDisciplina = false;
+            for (Disciplina d : disciplinas) {
+                if (d.getProfessor() != null && d.getProfessor().equals(professorSelecionado)) {
+                    System.out.println("- " + d.getNome());
+                    encontrouDisciplina = true;
+                }
+            }
+            if (!encontrouDisciplina) {
+                System.out.println(">> Este professor não ministra nenhuma disciplina.\n");
+            }
+        }
+    }
+
+    public void sair(Scanner scanner){
+        System.out.println(">> Encerrando sistema...\n >> Obrigado!");
+                    scanner.close();
+    }
+    /*public void fazerLogout(Usuario usuario, Scanner scanner){
+    System.out.println(" >> Fazendo logout...");
+                    usuarioLogado = null;
+                    System.out.println("\n\n\n--- Seja bem vindo ao PUCTricula! ---\n >> Realize o seu login.");
+                    do {
+                        usuarioLogado = realizarLogin(usuarios, scanner);
+                    } while (usuarioLogado == null);
+                }*/
 }
