@@ -12,11 +12,11 @@ Neste projeto que refatoramos, organizamos o código do Sistema de Matrícula se
 
 Dentro da classe de Aplicação(PucTriculaApplication.java) havia um grande switch case:
 
-![Aplicação antes da Refatoração](Diagramas/Aswitchcase.png)
+![Aplicação antes da Refatoração](Diagramas/Aswitchcase.jpg)
 
 Após a refatoração o código ficou desta forma:
 
-![Aplicação atual](Diagramas/SwitchCase.png)
+![Aplicação atual](Diagramas/SwitchCase.jpg)
 
 Podemos observar: 
 
